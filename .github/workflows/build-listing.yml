@@ -27,7 +27,7 @@ jobs:
     name: build-listing
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment-retry.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       
@@ -59,6 +59,21 @@ jobs:
         with:
           path: ${{env.listPublishDirectory}}
           
+      # 雛形からの変更: 上げた直後に配備すると成果物が見つからず失敗することがある（actions/deploy-pages#451）。
+      # 少し待ってから配備し、失敗したときだけもう一度待ってやり直す。
+      - name: Wait for the artifact
+        run: sleep 15
+
       - name: Deploy to GitHub Pages
         id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Wait before retrying the deployment
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 60
+
+      - name: Deploy to GitHub Pages (retry)
+        id: deployment-retry
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
