@@ -115,6 +115,15 @@ gh repo clone ryoctrl/<名前>
 
 2 つ目以降の版は、拡張リポジトリの README の「版の公開」の手順だけで一覧まで更新されます。
 
+## 拡張を更新するとき（Rurune_Nadema で確かめながら）
+
+Rurune_Nadema は `manifest.json` の `file:` 参照で、各拡張リポジトリの `Packages/jp.mosin.<名前>/` をそのまま読み込んでいます。これまでどおり Rurune_Nadema で使いながら直せます。
+
+1. Unity の Project ウィンドウでは、拡張は `Assets/9.Tools` ではなく **Packages** の下に表示名（例: Outfit Bone Sync（衣装のボーン合わせ））で出ます。ここでのスクリプトの編集・ファイルの追加は、拡張リポジトリの作業ツリー（`C:\Users\mosin\projects\vrc-packages\<リポジトリ名>\Packages\jp.mosin.<名前>\`）に直接入り、保存すると Unity が再コンパイルします。Codex・エディターからそのフォルダを直接編集しても同じです。
+2. 試すためのシーン・アバター・衣装は Rurune_Nadema の `Assets` に置き、パッケージの中には入れません（パッケージの中身はそのまま公開されます）。
+3. 区切りがついたら、拡張リポジトリでコミットして push します。Unity が新しく作った `.meta` も含めます。
+4. 公開するときは `package.json` の `version` を上げてから push し、拡張リポジトリの Build Release を実行します（一覧は自動で更新されます）。公開しない変更は push だけでかまいません。
+
 ## Rurune_Nadema での注意
 
 - Rurune_Nadema には、公開 VPM から同じパッケージを入れない。`manifest.json` の `file:` 参照と二重になります。
